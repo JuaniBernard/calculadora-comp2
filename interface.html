@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #919191; /* Cambia esto al color gris oscuro que desees */
+            color: rgb(0, 0, 0); /* Cambia el color del texto si es necesario */
+            margin: 0; /* Elimina el margen predeterminado del cuerpo */
+            padding: 0; /* Elimina el relleno predeterminado del cuerpo */
+            position: relative; /* Añadido para establecer un contexto de posicionamiento */
+        }
+
+        #calculator {
+            width: 600px;
+            margin: 65px auto;
+            padding: 30px;
+            /* border: 1px solid #000000;
+            border-radius: 16px;
+            background-color: #999494; /* Cambia esto al color blanco que desees para el fondo de la calculadora */
+        }
+
+        input {
+            width: 60%;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 16px;
+            background-color: #cecece;
+            font-family: Arial, sans-serif;
+            font-size: 36px;
+        }
+
+        /* Estilo para redondear las esquinas de los botones de los números */
+        button.number {
+            width: 95px;
+            height: 95px;
+            margin: 2px;
+            font-family: Arial, sans-serif;
+            font-size: 36px;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            border-radius: 16px; /* Ajusta este valor según tus preferencias de redondeo */
+            margin-bottom: 7.5px;
+        }
+
+        button.operator {
+            width: 95px;
+            height: 95px;
+            margin: 2px;
+            font-family: Arial, sans-serif;
+            font-size: 36px;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            color:#585858;
+            cursor: pointer;
+            border-radius: 16px; /* Ajusta este valor según tus preferencias de redondeo */
+            margin-bottom: 7.5px;
+        }
+
+        /* Estilo para el texto en la esquina inferior derecha */
+        #centerText {
+            position: absolute;
+            top: 120%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px; /* Ajusta el tamaño de la fuente del texto en la esquina */
+        }
+    </style>
+</head>
+<body>
+
+<div id="calculator">
+    <input type="text" id="display" disabled>
+    <br>
+    <button class="operator" onclick="appendToDisplay('(')">(</button>
+    <button class="operator" onclick="appendToDisplay(')')">)</button>
+    <button class="operator" onclick="backspace()">←</button>
+    <button class="operator" onclick="clearDisplay()">C</button>
+    <br>
+    <button class="number" onclick="appendToDisplay('7')">7</button>
+    <button class="number" onclick="appendToDisplay('8')">8</button>
+    <button class="number" onclick="appendToDisplay('9')">9</button>
+    <button class="operator" onclick="appendToDisplay('/')">/</button>
+    <br>
+    <button class="number" onclick="appendToDisplay('4')">4</button>
+    <button class="number" onclick="appendToDisplay('5')">5</button>
+    <button class="number" onclick="appendToDisplay('6')">6</button>
+    <button class="operator" onclick="appendToDisplay('*')">*</button>
+    <br>
+    <button class="number" onclick="appendToDisplay('1')">1</button>
+    <button class="number" onclick="appendToDisplay('2')">2</button>
+    <button class="number" onclick="appendToDisplay('3')">3</button>
+    <button class="operator" onclick="appendToDisplay('-')">-</button>
+    <br>
+    <button class="number" onclick="appendToDisplay('0')">0</button>
+    <button class="operator" onclick="appendToDisplay('.')">.</button>
+    <button class="operator" onclick="calculate()">=</button>
+    <button class="operator" onclick="appendToDisplay('+')">+</button>
+</div>
+
+<div id="centerText">
+    De Juani
+</div>
+
+<script>
+    function appendToDisplay(value) {
+        document.getElementById('display').value += value;
+    }
+
+    function clearDisplay() {
+        document.getElementById('display').value = '';
+    }
+
+    function backspace() {
+        var displayValue = document.getElementById('display').value;
+        document.getElementById('display').value = displayValue.slice(0, -1);
+    }
+
+    function calculate() {
+    try {
+        let input = document.getElementById('display').value;
+
+        // Reemplaza el símbolo de porcentaje (%) con la operación de cálculo correspondiente
+        input = input.replace(/([0-9.]+)%([0-9.]+)/g, function(match, p1, p2) {
+            // Convierte la cifra precedente al porcentaje correspondiente
+            return parseFloat(p1) * parseFloat(p2) / 100;
+        });
+
+        // Evalúa la expresión actualizada
+        document.getElementById('display').value = eval(input);
+    } catch (error) {
+        document.getElementById('display').value = 'Error';
+    }
+}
+</script>
+
+</body>
+</html>
