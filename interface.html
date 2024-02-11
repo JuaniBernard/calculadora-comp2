@@ -120,21 +120,26 @@
     }
 
     function calculate() {
-    try {
-        let input = document.getElementById('display').value;
+    let input = document.getElementById('display').value;
 
-        // Reemplaza el símbolo de porcentaje (%) con la operación de cálculo correspondiente
-        input = input.replace(/([0-9.]+)%([0-9.]+)/g, function(match, p1, p2) {
-            // Convierte la cifra precedente al porcentaje correspondiente
-            return parseFloat(p1) * parseFloat(p2) / 100;
-        });
-
-        // Evalúa la expresión actualizada
-        document.getElementById('display').value = eval(input);
-    } catch (error) {
-        document.getElementById('display').value = 'Error';
+    // Envía la expresión al servidor Python para su cálculo
+    fetch('http://127.0.0.1:12343', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'text/plain'
+        },
+        body: input
+    })
+    .then(response => response.text())
+    .then(result => {
+        // Muestra el resultado recibido del servidor en la interfaz
+        document.getElementById('display').value = result;
+    })
+    .catch(error => {
+        console.error('Error en la solicitud:', error);
+        document.getElementById('display').value = 'Error en la solicitud: ' + error.message;
+    });
     }
-}
 </script>
 
 </body>
