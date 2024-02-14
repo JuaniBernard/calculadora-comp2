@@ -1,12 +1,24 @@
 from queue import Queue
 import socket
 import threading
+import time
+
+result_queue_semaphore = threading.Semaphore()
 
 
 # Función que representa la tarea de cada hilo
 def calculate_term(term, result_queue):
+    # Adquirir el semáforo antes de poner el resultado en la cola
+    print(f"Hilo {threading.current_thread().name} adquiriendo semáforo")
+    result_queue_semaphore.acquire()
+    print(f"Hilo {threading.current_thread().name} semáforo adquirido")
     # Realizar el cálculo del término y poner el resultado en la cola
     result_queue.put((term, eval(term)))
+    # Liberar el semáforo después de poner el resultado en la cola
+    result_queue_semaphore.release()
+    print(f"Hilo {threading.current_thread().name} semáforo liberado")
+    # Simular cálculo intensivo
+    time.sleep(12)
 
 
 # Función para separar la expresión en términos
