@@ -1,9 +1,13 @@
+import multiprocessing
 from queue import Queue
+from shared_memory_manager import SharedMemoryManager
 import socket
 import threading
 import time
 
 result_queue_semaphore = threading.Semaphore()
+
+shared_memory_manager = SharedMemoryManager()
 
 
 # Función que representa la tarea de cada hilo
@@ -69,6 +73,12 @@ def calculate_final_result(terms, results):
 
 # Función para manejar solicitudes de clientes
 def handle_client(conn, addr):
+    parent_process = multiprocessing.current_process().name
+    print(f"Proceso padre {parent_process} para conexión desde {addr}")
+
+    # Imprimir todos los hilos del proceso padre
+    parent_thread_names = [thread.name for thread in threading.enumerate() if thread.name.startswith(parent_process)]
+    print(f"Hilos del proceso padre {parent_process}: {', '.join(parent_thread_names)}")
     print(f"Conexión entrante desde {addr}")
     # Recibe la expresión matemática del cliente
     data = conn.recv(1024).decode()
@@ -107,6 +117,9 @@ def handle_client(conn, addr):
     # Calcular el resultado final combinando los resultados de cada término
     final_result = calculate_final_result(terms, results)
 
+    # Actualizar los resultados en la memoria compartida
+    shared_memory_manager.update_result(expression, final_result)
+
     # Enviar el resultado de vuelta al cliente
     print(type(final_result))
     print(final_result)
@@ -116,6 +129,28 @@ def handle_client(conn, addr):
     # Cerrar la conexión
     conn.close()
 
+
+# Función para manejar conexiones entrantes en un proceso
+def accept_connections(server_socket):
+    while True:
+        # Esperar por una nueva conexión
+        conn, addr = server_socket.accept()
+        # Manejar la conexión en un hilo separado
+        client_thread = threading.Thread(target=handle_client, args=(conn, addr))
+        client_thread.start()
+
+
+# Función para manejar las actualizaciones de la memoria compartida
+def shared_memory_updater():
+    while True:
+        time.sleep(5)
+        results = shared_memory_manager.get_results()
+        print("Resultados en memoria compartida:", results)
+
+
+# Iniciar el hilo de actualización de memoria compartida
+shared_memory_updater_thread = threading.Thread(target=shared_memory_updater)
+shared_memory_updater_thread.start()
 
 # Configuración del servidor
 HOST = '127.0.0.1'
@@ -131,9 +166,8 @@ server_socket.bind((HOST, PORT))
 server_socket.listen(5)
 print(f"Servidor escuchando en {HOST}:{PORT}")
 
-while True:
-    # Esperar por una nueva conexión
-    conn, addr = server_socket.accept()
-    # Manejar la conexión en un hilo separado
-    client_thread = threading.Thread(target=handle_client, args=(conn, addr))
-    client_thread.start()
+# Crear un pool de procesos para representar conexiones al servidor
+num_processes = 4  # Puedes ajustar este número según tus necesidades
+with multiprocessing.Pool(processes=num_processes) as pool:
+    # Cada proceso en el pool ejecuta la función accept_connections
+    pool.map(accept_connections, [server_socket] * num_processes)
