@@ -8,20 +8,42 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #919191; /* Cambia esto al color gris oscuro que desees */
-            color: rgb(0, 0, 0); /* Cambia el color del texto si es necesario */
-            margin: 0; /* Elimina el margen predeterminado del cuerpo */
-            padding: 0; /* Elimina el relleno predeterminado del cuerpo */
-            position: relative; /* Añadido para establecer un contexto de posicionamiento */
+            background-color: #919191;
+            color: rgb(0, 0, 0);
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+        
+        #container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: stretch;
         }
 
         #calculator {
             width: 600px;
             margin: 65px auto;
             padding: 30px;
-            /* border: 1px solid #000000;
+        }
+
+        #results-container {
+            width: 300px;
+            margin: 65px auto;
+            margin-left: -225px;
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+            padding: 10px;
             border-radius: 16px;
-            background-color: #999494; /* Cambia esto al color blanco que desees para el fondo de la calculadora */
+            background-color: #cecece;
+        }
+
+        #results-title {
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
         }
 
         input {
@@ -34,7 +56,6 @@
             font-size: 36px;
         }
 
-        /* Estilo para redondear las esquinas de los botones de los números */
         button.number {
             width: 95px;
             height: 95px;
@@ -43,7 +64,7 @@
             font-size: 36px;
             box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
             cursor: pointer;
-            border-radius: 16px; /* Ajusta este valor según tus preferencias de redondeo */
+            border-radius: 16px;
             margin-bottom: 7.5px;
         }
 
@@ -56,50 +77,57 @@
             box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
             color:#585858;
             cursor: pointer;
-            border-radius: 16px; /* Ajusta este valor según tus preferencias de redondeo */
+            border-radius: 16px;
             margin-bottom: 7.5px;
         }
 
-        /* Estilo para el texto en la esquina inferior derecha */
         #centerText {
             position: absolute;
-            top: 120%;
+            top: 110%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 14px; /* Ajusta el tamaño de la fuente del texto en la esquina */
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
 
-<div id="calculator">
-    <input type="text" id="display" disabled>
-    <br>
-    <button class="operator" onclick="appendToDisplay('(')">(</button>
-    <button class="operator" onclick="appendToDisplay(')')">)</button>
-    <button class="operator" onclick="backspace()">←</button>
-    <button class="operator" onclick="clearDisplay()">C</button>
-    <br>
-    <button class="number" onclick="appendToDisplay('7')">7</button>
-    <button class="number" onclick="appendToDisplay('8')">8</button>
-    <button class="number" onclick="appendToDisplay('9')">9</button>
-    <button class="operator" onclick="appendToDisplay('/')">/</button>
-    <br>
-    <button class="number" onclick="appendToDisplay('4')">4</button>
-    <button class="number" onclick="appendToDisplay('5')">5</button>
-    <button class="number" onclick="appendToDisplay('6')">6</button>
-    <button class="operator" onclick="appendToDisplay('*')">*</button>
-    <br>
-    <button class="number" onclick="appendToDisplay('1')">1</button>
-    <button class="number" onclick="appendToDisplay('2')">2</button>
-    <button class="number" onclick="appendToDisplay('3')">3</button>
-    <button class="operator" onclick="appendToDisplay('-')">-</button>
-    <br>
-    <button class="number" onclick="appendToDisplay('0')">0</button>
-    <button class="operator" onclick="appendToDisplay('.')">.</button>
-    <button class="operator" onclick="calculate()">=</button>
-    <button class="operator" onclick="appendToDisplay('+')">+</button>
-</div>
+    <div id="container">
+        <div id="calculator">
+            <input type="text" id="display" disabled>
+            <br>
+            <button class="operator" onclick="appendToDisplay('(')">(</button>
+            <button class="operator" onclick="appendToDisplay(')')">)</button>
+            <button class="operator" onclick="backspace()">←</button>
+            <button class="operator" onclick="clearDisplay()">C</button>
+            <br>
+            <button class="number" onclick="appendToDisplay('7')">7</button>
+            <button class="number" onclick="appendToDisplay('8')">8</button>
+            <button class="number" onclick="appendToDisplay('9')">9</button>
+            <button class="operator" onclick="appendToDisplay('/')">/</button>
+            <br>
+            <button class="number" onclick="appendToDisplay('4')">4</button>
+            <button class="number" onclick="appendToDisplay('5')">5</button>
+            <button class="number" onclick="appendToDisplay('6')">6</button>
+            <button class="operator" onclick="appendToDisplay('*')">*</button>
+            <br>
+            <button class="number" onclick="appendToDisplay('1')">1</button>
+            <button class="number" onclick="appendToDisplay('2')">2</button>
+            <button class="number" onclick="appendToDisplay('3')">3</button>
+            <button class="operator" onclick="appendToDisplay('-')">-</button>
+            <br>
+            <button class="number" onclick="appendToDisplay('0')">0</button>
+            <button class="operator" onclick="appendToDisplay('.')">.</button>
+            <button class="operator" onclick="calculate()">=</button>
+            <button class="operator" onclick="appendToDisplay('+')">+</button>
+        </div>
+    
+        <div id="results-container">
+            <h2 id="results-title">Cálculos de otras personas:</h2>
+            <div id="results">
+            </div>
+        </div>
+    </div>
 
 <div id="centerText">
     De Juani
@@ -120,26 +148,52 @@
     }
 
     function calculate() {
-    let input = document.getElementById('display').value;
+        let input = document.getElementById('display').value;
 
-    // Envía la expresión al servidor Python para su cálculo
-    fetch('http://127.0.0.1:12343', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'text/plain'
-        },
-        body: input
-    })
-    .then(response => response.text())
-    .then(result => {
-        // Muestra el resultado recibido del servidor en la interfaz
-        document.getElementById('display').value = result;
-    })
-    .catch(error => {
-        console.error('Error en la solicitud:', error);
-        document.getElementById('display').value = 'Error en la solicitud: ' + error.message;
-    });
+        // Envía la expresión al servidor Python para su cálculo
+        fetch('http://127.0.0.1:12343', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: input
+        })
+        .then(response => response.text())
+        .then(result => {
+            // Muestra el resultado recibido del servidor en la interfaz
+            document.getElementById('display').value = result;
+        })
+        .catch(error => {
+            console.error('Error en la solicitud:', error);
+            document.getElementById('display').value = 'Error en la solicitud: ' + error.message;
+        });
     }
+
+    function updateResults() {
+        // Función para solicitar y actualizar los resultados de la memoria compartida
+
+        // Realizar solicitud al servidor
+        fetch('http://127.0.0.1:12343/results')
+            .then(response => response.json())
+            .then(data => {
+                // Limpiar el contenido actual de resultados
+                document.getElementById('results').innerHTML = '';
+
+                // Mostrar los resultados obtenidos en el div de resultados
+                for (const [expression, result] of Object.entries(data)) {
+                    const resultElement = document.createElement('p');
+                    resultElement.textContent = `${expression} = ${result}`;
+                    document.getElementById('results').appendChild(resultElement);
+                }
+            })
+            .catch(error => {
+                console.error('Error en la solicitud:', error);
+                document.getElementById('results').textContent = 'Error al obtener los resultados';
+            });
+    }
+
+    // Actualizar los resultados cada 8 segundos
+    setInterval(updateResults, 8000);
 </script>
 
 </body>
