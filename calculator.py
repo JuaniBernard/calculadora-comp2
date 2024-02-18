@@ -167,7 +167,7 @@ shared_memory_updater_thread = threading.Thread(target=shared_memory_updater)
 shared_memory_updater_thread.start()
 
 # Configuración del servidor
-HOST = '127.0.0.1'
+HOST = '0.0.0.0'
 PORT = 12343
 
 # Crear un socket TCP/IP
