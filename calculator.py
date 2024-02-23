@@ -64,11 +64,15 @@ def calculate_final_result(terms, results):
     for i in range(0, len(results)):
         _, result = results[i]
         operator = terms[j]  # Obtener el operador que precede al término
-        if operator == '+' or operator != '-':
+        if operator == '+':
             final_result += result
+            j = j + 2
+        elif operator != '-':
+            final_result += result
+            j = j + 1
         elif operator == '-':
             final_result -= result
-        j = j + 2
+            j = j + 2
     return final_result
 
 
@@ -82,10 +86,8 @@ def handle_client(conn, addr, request):
 
     # Lista para almacenar los hilos
     threads = []
-
     # Separar la expresión en términos con operadores
     terms = separate_terms(expression)
-
     # Crear una cola compartida para almacenar los resultados de cada término
     result_queue = Queue()
 
@@ -111,12 +113,10 @@ def handle_client(conn, addr, request):
 
     # Calcular el resultado final combinando los resultados de cada término
     final_result = calculate_final_result(terms, results)
-
     # Actualizar los resultados en la memoria compartida
     shared_memory_manager.update_result(expression, final_result)
 
     # Enviar el resultado de vuelta al cliente
-    print(type(final_result))
     print(final_result)
     response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nAccess-Control-Allow-Origin: *\r\n\r\n{final_result}"
     conn.sendall(response.encode())
@@ -162,26 +162,39 @@ def shared_memory_updater():
         print("Resultados en memoria compartida:", results)
 
 
-# Iniciar el hilo de actualización de memoria compartida
-shared_memory_updater_thread = threading.Thread(target=shared_memory_updater)
-shared_memory_updater_thread.start()
+# Función para reiniciar la memoria compartida periódicamente
+def reset_shared_memory(interval):
+    while True:
+        time.sleep(interval)
+        shared_memory_manager.clear_results()
+        print("Memoria compartida reiniciada")
 
-# Configuración del servidor
-HOST = '0.0.0.0'
-PORT = 12343
 
-# Crear un socket TCP/IP
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+if __name__ == "__main__":
+    # Iniciar el hilo de actualización de memoria compartida
+    shared_memory_updater_thread = threading.Thread(target=shared_memory_updater)
+    shared_memory_updater_thread.start()
 
-# Enlace del socket a la dirección y puerto
-server_socket.bind((HOST, PORT))
+    # Iniciar el hilo para reiniciar la memoria compartida periódicamente (cada 75 segundos)
+    reset_shared_memory_thread = threading.Thread(target=reset_shared_memory, args=(75,))
+    reset_shared_memory_thread.start()
 
-# Escuchar conexiones entrantes
-server_socket.listen(5)
-print(f"Servidor escuchando en {HOST}:{PORT}")
+    # Configuración del servidor
+    HOST = '0.0.0.0'
+    PORT = 12343
 
-# Crear un pool de procesos para representar conexiones al servidor
-num_processes = 4
-with multiprocessing.Pool(processes=num_processes) as pool:
-    # Cada proceso en el pool ejecuta la función accept_connections
-    pool.map(accept_connections, [server_socket] * num_processes)
+    # Crear un socket TCP/IP
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Enlace del socket a la dirección y puerto
+    server_socket.bind((HOST, PORT))
+
+    # Escuchar conexiones entrantes
+    server_socket.listen(5)
+    print(f"Servidor escuchando en {HOST}:{PORT}")
+
+    # Crear un pool de procesos para representar conexiones al servidor
+    num_processes = 4
+    with multiprocessing.Pool(processes=num_processes) as pool:
+        # Cada proceso en el pool ejecuta la función accept_connections
+        pool.map(accept_connections, [server_socket] * num_processes)

@@ -7,7 +7,6 @@ class SharedMemoryManager:
     def __init__(self):
         self.shared_memory = shm.SharedMemory(create=True, size=1024)
         self.data = {}
-
         # Inicializar la memoria compartida con un diccionario vacío
         self.shared_memory.buf[0:len(json.dumps(self.data))] = json.dumps(self.data).encode()
 
@@ -27,3 +26,11 @@ class SharedMemoryManager:
         json_data = self.shared_memory.buf[:].tobytes().decode().strip('\x00')
         # Decodificar la cadena JSON
         return json.loads(json_data)
+
+    def clear_results(self):
+        # Llenar la memoria compartida con ceros
+        self.shared_memory.buf[:self.shared_memory.size] = b'\x00' * self.shared_memory.size
+        # Crear un diccionario vacío
+        self.data = {}
+        # Escribir el diccionario vacío como JSON en la memoria compartida
+        self.shared_memory.buf[0:len(json.dumps(self.data))] = json.dumps(self.data).encode()
