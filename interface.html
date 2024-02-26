@@ -151,7 +151,7 @@
         let input = document.getElementById('display').value;
 
         // Envía la expresión al servidor Python para su cálculo
-        fetch('http://127.0.0.1:12343', {
+        fetch('http://127.0.0.1:12345', {
             method: 'POST',
             headers: {
                 'Content-Type': 'text/plain'
@@ -173,7 +173,7 @@
         // Función para solicitar y actualizar los resultados de la memoria compartida
 
         // Realizar solicitud al servidor
-        fetch('http://127.0.0.1:12343/results')
+        fetch('http://127.0.0.1:12345/results')
             .then(response => response.json())
             .then(data => {
                 // Limpiar el contenido actual de resultados

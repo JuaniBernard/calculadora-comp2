@@ -8,6 +8,6 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 12343
+EXPOSE 12345
 
 CMD [ "python3", "./calculator.py" ]

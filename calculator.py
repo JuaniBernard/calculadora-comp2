@@ -181,7 +181,7 @@ if __name__ == "__main__":
 
     # Configuración del servidor
     HOST = '0.0.0.0'
-    PORT = 12343
+    PORT = 12345
 
     # Crear un socket TCP/IP
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
