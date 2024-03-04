@@ -53,7 +53,7 @@ def separate_terms(expression):
         terms.append(last_operator)
     if current_term:
         terms.append(current_term.strip())
-    print(terms)
+    print("Términos:", terms)
     return terms
 
 
