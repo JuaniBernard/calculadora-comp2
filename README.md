@@ -21,12 +21,12 @@ Este repositorio contiene una calculadora implementada en Python que aplica hilo
 
 5. Abrir el archivo `interface.html` en su navegador web para acceder a la interfaz de la calculadora.
 
-6. Ingresar, tocando los botones, la expresión matemática en el campo de entrada y presionar el botón de calcular **"="** para obtener el resultado.
+6. Ingresar, tocando los botones, la expresión matemática en el campo de entrada y presionar el botón de calcular **`=`** para obtener el resultado.
 
 ## Requisitos:
 
 - Docker.
 - Navegador web compatible con HTML5.
 
-
+##
 ###### Este trabajo fue desarrollado como proyecto final de Computación 2 (Universidad de Mendoza) por Juan Ignacio Bernard.

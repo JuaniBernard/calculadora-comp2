@@ -1,5 +1,6 @@
 import json
 import multiprocessing
+import os
 from queue import Queue
 from shared_memory_manager import SharedMemoryManager
 import socket
@@ -13,6 +14,7 @@ shared_memory_manager = SharedMemoryManager()
 
 # Función que representa la tarea de cada hilo
 def calculate_term(term, result_queue):
+    print(f"Hilo {threading.current_thread().name} del proceso {os.getpid()}")
     # Adquirir el semáforo antes de poner el resultado en la cola
     print(f"Hilo {threading.current_thread().name} adquiriendo semáforo")
     result_queue_semaphore.acquire()
@@ -78,8 +80,8 @@ def calculate_final_result(terms, results):
 
 # Función para manejar solicitudes de clientes
 def handle_client(conn, addr, request):
-    parent_process = multiprocessing.current_process().name
-    print(f"Proceso {parent_process} para conexión desde {addr}")
+    process = multiprocessing.current_process().name
+    print(f"Proceso {process} ({os.getpid()}) para conexión desde {addr}")
     # Recibe la expresión matemática del cliente
     expression = request.split("\n")[-1]
     print(expression)
@@ -99,7 +101,7 @@ def handle_client(conn, addr, request):
             thread = threading.Thread(target=calculate_term, args=(term, result_queue))
             threads.append(thread)
             thread.start()
-            print(threads)
+    print(f"Hilos del proceso {os.getpid()}:", threads)
     # Esperar a que todos los hilos completen su ejecución
     for thread in threads:
         thread.join()
@@ -157,7 +159,7 @@ def handle_results_request(conn):
 # Función para manejar las actualizaciones de la memoria compartida
 def shared_memory_updater():
     while True:
-        time.sleep(5)
+        time.sleep(14)
         results = shared_memory_manager.get_results()
         print("Resultados en memoria compartida:", results)
 
@@ -192,6 +194,9 @@ if __name__ == "__main__":
     # Escuchar conexiones entrantes
     server_socket.listen(5)
     print(f"Servidor escuchando en {HOST}:{PORT}")
+
+    # Imprimir proceso principal
+    print("Proceso main:", os.getpid())
 
     # Crear un pool de procesos para representar conexiones al servidor
     num_processes = 4
