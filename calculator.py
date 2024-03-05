@@ -141,6 +141,12 @@ def accept_connections(server_socket):
         elif "POST / HTTP/1.1" in request:
             # Si la solicitud es calcular una expresión matemática, se maneja así
             handle_client(conn, addr, request)
+        else:
+            # Si la solicitud está dirigida a una dirección inexistente
+            print("Dirección no encontrada")
+            response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\n\r\n404 Not Found"
+            conn.sendall(response.encode())
+            conn.close()
 
 
 # Función para manejar solicitudes de resultados de memoria compartida
