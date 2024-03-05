@@ -182,11 +182,11 @@ if __name__ == "__main__":
     reset_shared_memory_thread.start()
 
     # Configuración del servidor
-    HOST = '0.0.0.0'
+    HOST = ''
     PORT = 12345
 
     # Crear un socket TCP/IP
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
 
     # Enlace del socket a la dirección y puerto
     server_socket.bind((HOST, PORT))
